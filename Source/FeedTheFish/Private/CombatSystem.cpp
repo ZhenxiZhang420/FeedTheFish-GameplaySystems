@@ -1,4 +1,12 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+/*
+ * CombatSystem.cpp
+ *
+ * Central combat calculation utility for applying damage between players and enemies.
+ * Responsibilities:
+ * - Calculate final damage based on attacker, target, skill data, defense, critical hits, and dodge.
+ * - Apply damage to enemy or player targets.
+ * - Handle lifesteal recovery after successful damage.
+ */
 
 #include "CombatSystem.h"
 #include "EnemyActor.h"
@@ -14,7 +22,7 @@ void UCombatSystem::ApplyDamage(AActor* Attacker, AActor* Target, float BaseDama
 
     float FinalDamage = CalculateDamage(Attacker, Target, BaseDamage, &SkillUsed);
 
-    if (FinalDamage <= 0.f) return; // 可能被闪避
+    if (FinalDamage <= 0.f) return; // Damage may be fully avoided by dodge logic
 
     if (AEnemyActor* Enemy = Cast<AEnemyActor>(Target))
     {
@@ -36,7 +44,7 @@ void UCombatSystem::ApplyDamage(AActor* Attacker, AActor* Target, float BaseDama
         }
     }
 
-    // 吸血逻辑（还是保留）
+    // Apply lifesteal after successful damage
     if (Attacker)
     {
         if (UCharacterAttributeComponent* AttackerAttr = Attacker->FindComponentByClass<UCharacterAttributeComponent>())
@@ -74,13 +82,13 @@ float UCombatSystem::CalculateDamage(AActor* Attacker, AActor* Target, float Bas
         //    FinalDamage *= SkillUsed->DamageMultiplier;
         //}
 
-        // ✅ 新增：怪物防御减伤
+        // Reduce player damage by enemy defense
         if (AEnemyActor* Enemy = Cast<AEnemyActor>(Target))
         {
             FinalDamage = FMath::Max(1.f, FinalDamage - Enemy->Defense);
         }
 
-        // 玩家有暴击
+        // Apply player critical hit chance
         if (FMath::FRand() < (AttackerAttr->GetTotalCritRate() / 100.f))
         {
             FinalDamage *= 1.5f;
@@ -92,7 +100,7 @@ float UCombatSystem::CalculateDamage(AActor* Attacker, AActor* Target, float Bas
         UCharacterAttributeComponent* TargetAttr = Target->FindComponentByClass<UCharacterAttributeComponent>();
         if (!TargetAttr) return BaseDamage;
 
-        // 玩家有闪避
+        // Apply player dodge chance
         if (FMath::FRand() < (TargetAttr->GetTotalDodgeRate() / 100.f))
         {
             UE_LOG(LogTemp, Log, TEXT("玩家闪避了怪物攻击！"));

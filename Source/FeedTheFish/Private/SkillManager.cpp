@@ -1,3 +1,14 @@
+/*
+ * SkillManager.cpp
+ *
+ * Player skill component for learning, upgrading, cooldown tracking, and skill execution.
+ * Responsibilities:
+ * - Learn and upgrade skills using required blueprint items.
+ * - Track learned skill levels and cooldown timers.
+ * - Apply skill effects during combat.
+ * - Support temporary stat-based skill effects such as attack speed boosts.
+ */
+
 #include "SkillManager.h"
 #include "CombatSystem.h"
 #include "Engine/DataTable.h"
@@ -250,7 +261,7 @@ void USkillManager::PerformSmashHit(AActor* Caster, AActor* Target, const FSkill
     }
     if (Multiplier <= 0.f) Multiplier = 1.0f;
 
-    // ✅ 获取真实攻击力
+    // Use the character's calculated total attack value
     UCharacterAttributeComponent* Attr = Caster->FindComponentByClass<UCharacterAttributeComponent>();
     float BaseDamage = Attr ? Attr->GetTotalAttack() : 1.0f;
 

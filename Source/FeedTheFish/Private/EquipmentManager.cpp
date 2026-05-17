@@ -1,4 +1,14 @@
-// EquipmentManager.cpp
+/*
+ * EquipmentManager.cpp
+ *
+ * Equipment subsystem for equipping, replacing, enhancing, and unequipping gear.
+ * Responsibilities:
+ * - Move equipment between inventory and equipped slots.
+ * - Apply and remove equipment stat bonuses.
+ * - Strengthen equipment using other equipment as upgrade materials.
+ * - Broadcast equipment updates to refresh UI and character attributes.
+ */
+
 #include "EquipmentManager.h"
 #include "CharacterAttributeComponent.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -38,16 +48,16 @@ void UEquipmentManager::Equip(int32 EquipmentUniqueID)
 
     EEquipmentSlot Slot = EquipData->Slot;
 
-    // 如果已有装备，卸下旧的
+    // Replace the currently equipped item if this slot is already occupied
     if (EquippedItems.Contains(Slot))
     {
-        int32 OldUniqueID = EquippedItems[Slot].UniqueID; // ✅ 改成 .UniqueID
+        int32 OldUniqueID = EquippedItems[Slot].UniqueID; // Use the unique equipment instance ID
         ReplaceEquippedItem(EquipmentUniqueID);
         return;
     }
 
-    // 穿戴新装备
-    EquippedItems.Add(Slot, *EquipmentItem); // ✅ 加整个 EquipmentItem，不是UniqueID
+    // Equip the new item instance
+    EquippedItems.Add(Slot, *EquipmentItem); // Store the full equipment instance instead of only the unique ID
 
     FEquipmentStats Stats = GetTotalStatsByEquipmentInstance(*EquipmentItem);
     ApplyStats(Stats);
@@ -110,12 +120,12 @@ void UEquipmentManager::ReplaceEquippedItem(int32 NewEquipmentUniqueID)
 
 bool UEquipmentManager::StrengthenEquipment(int32 TargetUniqueID, int32 ConsumedUniqueID, float& OutGainExp)
 {
-    OutGainExp = 0.0f; // 默认赋初值，防止意外
+    OutGainExp = 0.0f; // Initialize the output value to avoid unexpected results
 
     UInventoryManager* Inventory = GetInventory();
     if (!Inventory) return false;
 
-    // 查找要强化的目标装备
+    // Find the target equipment instance to enhance
     FInventoryEquipmentItem TargetItem;
     if (!Inventory->FindEquipmentByUniqueID(TargetUniqueID, TargetItem))
     {
@@ -123,7 +133,7 @@ bool UEquipmentManager::StrengthenEquipment(int32 TargetUniqueID, int32 Consumed
         return false;
     }
 
-    // 根据当前经验计算强化阶段
+    // Calculate the current enhancement stage based on accumulated experience
     int32 Stage = FMath::FloorToInt(TargetItem.StrengthenExp / 10.0f);
     float MinExp = 1.0f;
     float MaxExp = 3.0f;
@@ -148,12 +158,12 @@ bool UEquipmentManager::StrengthenEquipment(int32 TargetUniqueID, int32 Consumed
         break;
     }
 
-    OutGainExp = FMath::FRandRange(MinExp, MaxExp); // ✅ 生成并保存
+    OutGainExp = FMath::FRandRange(MinExp, MaxExp); // Generate and store gained enhancement experience
 
-    // 材料装备直接删掉
+    // Remove the material equipment instance after it is consumed
     Inventory->RemoveEquipmentByUniqueID(ConsumedUniqueID);
 
-    // 给目标装备增加经验
+    // Add enhancement experience to the target equipment
     bool bSuccess = Inventory->ModifyEquipmentStrengthenExp(TargetUniqueID, OutGainExp);
 
     if (bSuccess)
@@ -285,7 +295,7 @@ bool UEquipmentManager::GetEquippedItem(EEquipmentSlot Slot, FInventoryEquipment
 {
     if (const FInventoryEquipmentItem* FoundItem = EquippedItems.Find(Slot))
     {
-        OutItem = *FoundItem; // ✅ 直接拷贝整个结构体
+        OutItem = *FoundItem; // Copy the full equipment instance data
         return true;
     }
 
@@ -305,14 +315,14 @@ void UEquipmentManager::Unequip(EEquipmentSlot Slot)
 
     FInventoryEquipmentItem EquippedItem = EquippedItems[Slot];
 
-    // 移除属性加成
+    // Remove the equipped item stat bonuses
     FEquipmentStats Stats = GetTotalStatsByEquipmentInstance(EquippedItem);
     RemoveStats(Stats);
 
-    // 把装备添加回背包
+    // Return the equipped item to the inventory
     Inventory->AddEquipmentFromInstance(EquippedItem);
 
-    // 移除已装备记录
+    // Remove the equipped slot record
     EquippedItems.Remove(Slot);
 
     UE_LOG(LogTemp, Log, TEXT("成功卸下装备，UniqueID：%d，槽位：%d"), EquippedItem.UniqueID, (int32)Slot);

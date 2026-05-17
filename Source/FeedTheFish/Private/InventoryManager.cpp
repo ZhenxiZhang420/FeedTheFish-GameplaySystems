@@ -1,4 +1,13 @@
-// InventoryManager.cpp
+/*
+ * InventoryManager.cpp
+ *
+ * Runtime inventory subsystem for managing materials and equipment instances.
+ * Responsibilities:
+ * - Add and consume material items.
+ * - Store equipment as unique item instances.
+ * - Provide item data for inventory UI and gameplay systems.
+ * - Broadcast inventory updates to refresh UI.
+ */
 
 #include "InventoryManager.h"
 #include "DropActor.h"
@@ -20,7 +29,7 @@ void UInventoryManager::AddItem(FName ItemID, EDropItemType ItemType, FText Name
 
     if (Item.Quantity == 0)
     {
-        Item.ItemID = Key;  // ✅ 保存真正带等级的ID
+        Item.ItemID = Key;  // Store the grade-specific item ID
         Item.ItemType = ItemType;
         Item.Name = Name;
         Item.MaterialGrade = Grade;
@@ -33,7 +42,7 @@ void UInventoryManager::AddItem(FName ItemID, EDropItemType ItemType, FText Name
     FString TypeStr = UEnum::GetValueAsString(ItemType).Replace(TEXT("EDropItemType::"), TEXT(""));
 
     UE_LOG(LogTemp, Log, TEXT("获得物品：%s（类型：%s），当前数量：%d"),
-        *Item.ItemID.ToString(), *TypeStr, Item.Quantity);  // ✅ 这里也最好用 Item.ItemID 打印
+        *Item.ItemID.ToString(), *TypeStr, Item.Quantity);  // Log the actual stored item ID
 
     OnInventoryUpdated.Broadcast();
 }
@@ -57,7 +66,7 @@ bool UInventoryManager::AddItemFromDropTable(FName ItemID, EMaterialGrade Grade,
         {
             if (Item.ItemID == ItemID)
             {
-                // 找到该ID对应的Sprite和描述
+                // Retrieve the sprite, description, type, and display name for this item ID
                 UTexture2D* Texture = Item.Sprite ? Item.Sprite->GetBakedTexture() : nullptr;
                 FText Description = Item.Description;
                 EDropItemType Type = Item.ItemType;
@@ -133,7 +142,7 @@ TArray<FInventoryEquipmentItem> UInventoryManager::GetAllEquipments() const
 {
     TArray<FInventoryEquipmentItem> Result = EquipmentInventory;
 
-    // 按 MaterialGrade 从高到低排序（Perfect > Excellent > ... > Poor）
+    // Sort by material grade from highest to lowest
     Result.Sort([](const FInventoryEquipmentItem& A, const FInventoryEquipmentItem& B)
         {
             return static_cast<int32>(A.MaterialGrade) > static_cast<int32>(B.MaterialGrade);
