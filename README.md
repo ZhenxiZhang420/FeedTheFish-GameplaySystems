@@ -201,41 +201,43 @@ Art assets and visual resources were created separately.
 - Blueprint + C++ integration
 
 ---
+## Selected Implementation Highlights
 
-## Project Structure
+### Gameplay Progression Loop
 
-```text
-Source/
+Combat → Loot → Inventory → Equipment → Enhancement → Skills → Quest Progression
 
-├── Combat/
-│ ├── CombatSystem.cpp
-│ ├── PlayerCombatComponent.cpp
-│ └── EnemyCombatComponent.cpp
+Designed gameplay systems to support a complete progression loop and long-term player growth.
 
-├── Character/
-│ ├── PlayerCharacter.cpp
-│ └── CharacterAttributeComponent.cpp
+---
 
-├── Enemy/
-│ ├── EnemyActor.cpp
-│ ├── SharkBehavior.cpp
-│ └── EliteSharkBehavior.cpp
+### Dynamic Equipment Progression
 
-├── Inventory/
-│ ├── InventoryManager.cpp
-│ ├── DropSystem.cpp
-│ └── DropActor.cpp
+Character attributes update automatically based on equipment and enhancement changes.
 
-├── Equipment/
-│ ├── EquipmentManager.cpp
-│ └── CraftingSystem.cpp
+---
 
-├── Skill/
-│ └── SkillManager.cpp
+### Skill Progression
 
-├── Input/
-│ ├── PlayerGameController.cpp
-│ └── FingerClickActor.cpp
+Players unlock and learn abilities through a skill tree system, allowing combat behavior to evolve over time.
 
-└── Camera/
-└── FollowCameraActor.cpp
+---
+
+### Quest & Tutorial Flow
+
+Quest progression and tutorial guidance work together to help players understand gameplay mechanics and progression systems.
+
+---
+
+## Notes
+
+Art assets and visual resources were created separately. My contribution focused on gameplay programming and system implementation.
+
+---
+
+## Contact
+
+[LinkedIn](https://www.linkedin.com/in/zhenxizhang0420/)
+
+Email:
+zhenxizhang420@gmail.com
