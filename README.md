@@ -5,19 +5,10 @@ This project focuses on interconnected gameplay systems including combat, progre
 
 ---
 
-## Gameplay Demo
-
-🎥 Watch Demo Video:
-
-[Gameplay Systems Demo](PUT_VIDEO_LINK_HERE)
-
----
 
 ## Screenshots
 
 ### Combat System
-
-[Put Combat Screenshot Here]
 
 ![Combat](Docs/Images/combat.png)
 
@@ -25,15 +16,11 @@ This project focuses on interconnected gameplay systems including combat, progre
 
 ### Inventory & Equipment
 
-[Put Inventory Screenshot Here]
-
 ![Inventory](Docs/Images/inventory.png)
 
 ---
 
 ### Equipment Enhancement
-
-[Put Enhancement Screenshot Here]
 
 ![Enhancement](Docs/Images/enhancement.png)
 
@@ -41,17 +28,19 @@ This project focuses on interconnected gameplay systems including combat, progre
 
 ### Skill Tree System
 
-[Put Skill Tree Screenshot Here]
-
 ![SkillTree](Docs/Images/skilltree.png)
 
 ---
 
-### Quest & Tutorial System
-
-[Put Quest/Tutorial Screenshot Here]
+### Quest System
 
 ![Quest](Docs/Images/quest.png)
+
+---
+
+### Tutorial System
+
+![Quest](Docs/Images/tutorial.png)
 
 ---
 
